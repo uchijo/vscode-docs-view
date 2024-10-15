@@ -1,16 +1,10 @@
 import json5 from 'json5';
 import * as shiki from 'shiki';
-import type { IShikiTheme, Theme } from 'shiki';
+import type { IShikiTheme } from 'shiki';
 import { Highlighter } from 'shiki';
 import * as vscode from 'vscode';
 
 declare const TextDecoder: any;
-
-// Default themes use `include` option that shiki doesn't support
-const defaultThemesMap = new Map<string, Theme>([
-	['Default Light+', 'light-plus'],
-	['Default Dark+', 'dark-plus'],
-]);
 
 function getCurrentThemePath(themeName: string): vscode.Uri | undefined {
 	for (const ext of vscode.extensions.all) {
@@ -87,9 +81,7 @@ export class CodeHighlighter {
 		let theme: string | IShikiTheme | undefined;
 
 		const currentThemeName = vscode.workspace.getConfiguration('workbench').get<string>('colorTheme');
-		if (currentThemeName && defaultThemesMap.has(currentThemeName)) {
-			theme = defaultThemesMap.get(currentThemeName);
-		} else if (currentThemeName) {
+		if (currentThemeName) {
 			const colorThemePath = getCurrentThemePath(currentThemeName);
 			if (colorThemePath) {
 				theme = await shiki.loadTheme(colorThemePath.fsPath);
